@@ -45,12 +45,12 @@ Headline January findings (09:00 cutoff): MAE 2,039 MW (18 % of mean actual), bi
 │   ├── tests/test_core.py    pytest: as-of boundary cases, no-lookahead, metrics signs, rolling-bias leak test, snapshot smoke test
 │   ├── Dockerfile            python:3.12-slim + uvicorn
 │   └── requirements.txt
-├── frontend/                 Vite + React 19 + TypeScript + Tailwind v4 + Recharts + TanStack Query; light print-style theme (Fraunces / IBM Plex)
+├── frontend/                 Vite + React 19 + TypeScript + Tailwind v4 + Recharts + TanStack Query; lucide-react icons; soft lavender dashboard theme (Figtree)
 │   ├── src/App.tsx           header, cutoff selector, tabs, "How it works" dialog
 │   ├── src/DayAhead.tsx      day-ahead desk page
 │   ├── src/Accuracy.tsx      accuracy page
 │   ├── src/api.ts            typed API client + React Query hooks
-│   ├── src/ui.tsx            KPI/Card/Badge/Skeleton, number formatting, CSV export
+│   ├── src/ui.tsx            KPI tiles, cards, rings, chart helpers (bar pills, hatch, tooltips), CSV export
 │   ├── Dockerfile            node build → nginx (serves SPA, proxies /api → backend)
 │   └── nginx.conf
 ├── docker-compose.yml        backend :8000 + frontend :3000
