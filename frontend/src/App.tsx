@@ -50,7 +50,7 @@ export default function App() {
           )}
 
           <div className="mt-auto flex items-center gap-3 px-1.5 pt-6">
-            <span className="grid h-11 w-11 flex-none place-items-center rounded-full bg-gradient-to-br from-[#f3d3df] to-[#d6d7f5] text-[14px] font-semibold">GB</span>
+            <span className="grid h-11 w-11 flex-none place-items-center rounded-full bg-[var(--forecast-soft)] text-[#454bc0] text-[14px] font-semibold">GB</span>
             {!collapsed && <div className="min-w-0 leading-tight"><div className="text-[15px]">Day-ahead desk</div><div className="truncate text-[13px] text-[var(--muted)]">Pilot · January 2026</div></div>}
           </div>
         </aside>

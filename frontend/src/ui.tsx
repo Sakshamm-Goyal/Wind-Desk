@@ -57,7 +57,7 @@ export const mwSigned = (name: string): AnyFmt => v => [signed(Number(v)) + ' MW
 export const count = (name: string): AnyFmt => v => [String(v), name]
 export const lbl = (f: (x: number) => string) => (v: unknown) => f(Number(v))
 export const tip = {
-  contentStyle: { background: '#fff', border: 'none', borderRadius: 14, boxShadow: '0 10px 30px -10px rgb(29 27 41 / .25)', fontSize: 13, color: 'var(--ink)', padding: '10px 14px' },
+  contentStyle: { background: '#fff', borderRadius: 14, boxShadow: '0 1px 2px rgb(22 26 35 / .06), 0 10px 30px -12px rgb(22 26 35 / .2)', border: '1px solid var(--line)', fontSize: 13, color: 'var(--ink)', padding: '10px 14px' },
   labelStyle: { color: 'var(--muted)', marginBottom: 4 },
   itemStyle: { padding: 0 },
 }
@@ -68,8 +68,8 @@ export const axis = { axisLine: false, tickLine: false } as const
 export const Hatch = ({ id = 'hatch' }: { id?: string }) => (
   <defs>
     <pattern id={id} patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
-      <rect width="7" height="7" fill="#f7f6fb" />
-      <line x1="0" y1="0" x2="0" y2="7" stroke="#eeedf4" strokeWidth="3" />
+      <rect width="7" height="7" fill="#f6f7f9" />
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#eceef2" strokeWidth="3" />
     </pattern>
   </defs>
 )
@@ -88,7 +88,7 @@ export const barPill = (show: (i: number) => boolean, text: (v: number) => strin
 }
 
 /** Pill label anchored at the left end of a ReferenceLine. */
-export function LinePill({ viewBox, text, fill = 'var(--short)', right }: { viewBox?: { x?: number; y?: number; width?: number }; text: string; fill?: string; right?: boolean }) {
+export function LinePill({ viewBox, text, fill = 'var(--ink)', right }: { viewBox?: { x?: number; y?: number; width?: number }; text: string; fill?: string; right?: boolean }) {
   const w = text.length * 7 + 20, y = viewBox?.y ?? 0
   const x = right ? (viewBox?.x ?? 0) + (viewBox?.width ?? 0) - w : (viewBox?.x ?? 0) + 2
   return (

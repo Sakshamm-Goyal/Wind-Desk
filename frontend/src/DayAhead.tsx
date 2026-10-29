@@ -80,7 +80,7 @@ export default function DayAhead({ meta, cutoff }: { meta: Meta; cutoff: string 
           <ResponsiveContainer width="100%" height={360}>
             <ComposedChart data={chart} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
               <defs>
-                <linearGradient id="gActual" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--actual)" stopOpacity={0.16} /><stop offset="100%" stopColor="var(--actual)" stopOpacity={0} /></linearGradient>
+                <linearGradient id="gActual" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--actual)" stopOpacity={0.07} /><stop offset="100%" stopColor="var(--actual)" stopOpacity={0} /></linearGradient>
               </defs>
               <CartesianGrid stroke="var(--line)" vertical={false} />
               <XAxis dataKey="label" tick={tick} interval={2} {...axis} dy={8} />
@@ -95,14 +95,14 @@ export default function DayAhead({ meta, cutoff }: { meta: Meta; cutoff: string 
               {showAdj && <Line dataKey="adjusted" name="Bias-adjusted" stroke="var(--adjusted)" strokeWidth={2} strokeDasharray="6 5" dot={false} />}
             </ComposedChart>
           </ResponsiveContainer>
-          {showAll && <p className="hint mt-2">Light lines are every later WINDFOR run for this day, i.e. what the desk would have known had it waited. Only the violet line was available at the {cutoff} cutoff.</p>}
+          {showAll && <p className="hint mt-2">Light lines are every later WINDFOR run for this day, i.e. what the desk would have known had it waited. Only the indigo line was available at the {cutoff} cutoff.</p>}
         </Card>
 
         <Card title="Forecast runs" right={<span className="hint">MAE for this day</span>}>
           <ul ref={runsRef} className="scroll-thin -mr-3 max-h-[372px] overflow-y-auto pr-3">
             {runs.map(r => (
               <li key={r.published} data-used={r.is_decision || undefined} className="flex items-center gap-3 border-b border-[var(--line)] py-3 last:border-0">
-                <span className={`grid h-10 w-10 flex-none place-items-center rounded-full ${r.is_decision ? 'bg-[var(--forecast)] text-white' : r.afterGate ? 'bg-[var(--soft)] text-[var(--dim)]' : 'bg-[var(--forecast-soft)] text-[#4f52b8]'}`}><Clock3 size={17} /></span>
+                <span className={`grid h-10 w-10 flex-none place-items-center rounded-full ${r.is_decision ? 'bg-[var(--forecast)] text-white' : r.afterGate ? 'bg-[var(--soft)] text-[var(--dim)]' : 'bg-[var(--forecast-soft)] text-[#454bc0]'}`}><Clock3 size={17} /></span>
                 <div className="min-w-0 flex-1 leading-tight">
                   <div className="text-[15px]">{r.label} run {r.is_decision && <span className="chip chip-forecast ml-1 !h-6">used</span>}</div>
                   <div className="text-[13px] text-[var(--dim)]">{hhmm(r.published)} · {r.afterGate ? 'after cutoff' : 'available'}</div>
@@ -123,10 +123,10 @@ export default function DayAhead({ meta, cutoff }: { meta: Meta; cutoff: string 
               <XAxis dataKey="day" tick={tick} {...axis} dy={8} interval={0} />
               <YAxis tick={tick} width={48} {...axis} tickFormatter={lbl(v => fmt(v / 1000, 0) + ' GW')} domain={[0, (hi: number) => Math.ceil(hi / 1000) * 1000]} />
               <Tooltip {...tip} formatter={mw()} labelFormatter={(_: unknown, p: readonly { payload?: { date?: string } }[]) => p?.[0]?.payload?.date ? dayName(p[0].payload.date) : ''} cursor={false} />
-              <ReferenceLine y={acc.data.overall.mae} stroke="var(--short)" strokeDasharray="5 5" strokeWidth={1.5} label={<LinePill text="avg" />} />
+              <ReferenceLine y={acc.data.overall.mae} stroke="var(--dim)" strokeDasharray="5 5" strokeWidth={1.25} label={<LinePill text="avg" />} />
               <Bar dataKey="mae" name="MAE" radius={[10, 10, 10, 10]} background={{ fill: 'url(#hatch)', radius: 10 }}
                 label={barPill(i => i === sel, v => `${fmt(v)} MW`)}>
-                {month.map((d, i) => <Cell key={d.date} fill={i === sel ? 'var(--forecast)' : d.mae > acc.data!.overall.mae ? '#f2c3d4' : '#e4e3f4'} />)}
+                {month.map((d, i) => <Cell key={d.date} fill={i === sel ? 'var(--forecast)' : d.mae > acc.data!.overall.mae ? '#c3c6e6' : '#e5e7f1'} />)}
               </Bar>
             </ComposedChart>
           </ResponsiveContainer>
@@ -145,7 +145,7 @@ export default function DayAhead({ meta, cutoff }: { meta: Meta; cutoff: string 
               <Bar dataKey="error" name="error" radius={[6, 6, 6, 6]}>{chart.map((r, i) => <Cell key={i} fill={(r.error ?? 0) < 0 ? 'var(--short)' : 'var(--surplus)'} fillOpacity={0.85} />)}</Bar>
             </ComposedChart>
           </ResponsiveContainer>
-          <p className="hint mt-2">Pink hours had less wind than forecast: thermal shortfall to cover.</p>
+          <p className="hint mt-2">Red hours had less wind than forecast: thermal shortfall to cover.</p>
         </Card>
 
         <Card title="Procurement cover" right={<span className={`chip ${showAdj ? 'chip-forecast' : ''}`}>{showAdj ? 'bias-adjusted' : 'raw forecast'}</span>}>
@@ -153,7 +153,7 @@ export default function DayAhead({ meta, cutoff }: { meta: Meta; cutoff: string 
             <div className="space-y-2.5 text-[14px] text-[var(--muted)]">
               <p>Buy the gap implied by the {showAdj ? 'bias-adjusted ' : ''}forecast, plus a wind-risk buffer sized from January's errors:</p>
               {(['p80', 'p90', 'p95'] as const).map(k => (
-                <div key={k} className={`flex items-center justify-between rounded-2xl px-4 py-3 ${k === 'p90' ? 'bg-gradient-to-r from-[#f3e1ec] to-[#e5e3f6]' : 'bg-[var(--soft)]'}`}>
+                <div key={k} className={`flex items-center justify-between rounded-2xl px-4 py-3 ${k === 'p90' ? 'bg-[var(--forecast-soft)]' : 'bg-[var(--soft)]'}`}>
                   <span className="flex items-center gap-2"><Gauge size={17} />Covered in {k.slice(1)} % of hours</span>
                   <b className="num text-[17px] font-medium text-[var(--ink)]">+{fmt(buf[k])} MW</b>
                 </div>

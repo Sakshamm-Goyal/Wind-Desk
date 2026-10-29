@@ -45,7 +45,7 @@ Headline January findings (09:00 cutoff): MAE 2,039 MW (18 % of mean actual), bi
 │   ├── tests/test_core.py    pytest: as-of boundary cases, no-lookahead, metrics signs, rolling-bias leak test, snapshot smoke test
 │   ├── Dockerfile            python:3.12-slim + uvicorn
 │   └── requirements.txt
-├── frontend/                 Vite + React 19 + TypeScript + Tailwind v4 + Recharts + TanStack Query; lucide-react icons; soft lavender dashboard theme (Figtree)
+├── frontend/                 Vite + React 19 + TypeScript + Tailwind v4 + Recharts + TanStack Query; lucide-react icons; clean white dashboard theme with one indigo accent (Figtree)
 │   ├── src/App.tsx           header, cutoff selector, tabs, "How it works" dialog
 │   ├── src/DayAhead.tsx      day-ahead desk page
 │   ├── src/Accuracy.tsx      accuracy page

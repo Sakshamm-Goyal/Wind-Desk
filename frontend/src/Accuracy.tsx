@@ -41,13 +41,13 @@ export default function Accuracy({ cutoff }: { cutoff: string }) {
               <XAxis dataKey="label" tick={<RunTick />} {...axis} interval={0} height={40} />
               <YAxis tick={tick} width={62} {...axis} domain={[0, 2400]} ticks={[0, 600, 1200, 1800, 2400]} tickFormatter={lbl(v => fmt(v / 1000, 1) + ' GW')} />
               <Tooltip {...tip} formatter={mw()} cursor={false} />
-              {decisionSlot && <ReferenceLine y={decisionSlot.mae} stroke="var(--short)" strokeDasharray="5 5" strokeWidth={1.5} label={<LinePill text="at the gate" right />} />}
+              {decisionSlot && <ReferenceLine y={decisionSlot.mae} stroke="var(--dim)" strokeDasharray="5 5" strokeWidth={1.25} label={<LinePill text="at the gate" right />} />}
               <Bar dataKey="mae" name="MAE" radius={[10, 10, 10, 10]} background={{ fill: 'url(#hatch)', radius: 10 }} label={barPill(i => i === decisionIdx, v => `${fmt(v)} MW`)}>
-                {a.by_vintage.map((v, i) => <Cell key={i} fill={i === decisionIdx ? 'var(--forecast)' : v.label.startsWith('D ') ? '#eceaf5' : '#dcdcf3'} />)}
+                {a.by_vintage.map((v, i) => <Cell key={i} fill={i === decisionIdx ? 'var(--forecast)' : v.label.startsWith('D ') ? '#eceef3' : '#d7d9ee'} />)}
               </Bar>
             </ComposedChart>
           </ResponsiveContainer>
-          <p className="hint mt-2">"D-1" runs are published the day before delivery, "D" runs on the day itself. The violet bar is the last run available at the {cutoff} cutoff; the bars to its right show what waiting would have bought.</p>
+          <p className="hint mt-2">"D-1" runs are published the day before delivery, "D" runs on the day itself. The indigo bar is the last run available at the {cutoff} cutoff; the bars to its right show what waiting would have bought.</p>
         </Card>
 
         <Card title="What January tells the desk">
@@ -69,8 +69,8 @@ export default function Accuracy({ cutoff }: { cutoff: string }) {
               <YAxis tick={tick} width={44} {...axis} tickFormatter={lbl(v => fmt(v / 1000, 1) + 'k')} />
               <Tooltip {...tip} formatter={mw()} labelFormatter={lbl(h => `${String(h).padStart(2, '0')}:00 UTC`)} cursor={false} />
               <ReferenceLine y={0} stroke="var(--line-2)" />
-              <Bar dataKey="mae" name="MAE" radius={[6, 6, 6, 6]} label={barPill(i => i === worstHourIdx, v => fmt(v), 'var(--short)')}>
-                {a.by_hour.map((_, i) => <Cell key={i} fill={i === worstHourIdx ? 'var(--short)' : '#dcdcf3'} />)}
+              <Bar dataKey="mae" name="MAE" radius={[6, 6, 6, 6]} label={barPill(i => i === worstHourIdx, v => fmt(v))}>
+                {a.by_hour.map((_, i) => <Cell key={i} fill={i === worstHourIdx ? 'var(--forecast)' : '#d7d9ee'} />)}
               </Bar>
               <Line dataKey="bias" name="Bias" stroke="var(--short)" strokeWidth={2} dot={false} strokeDasharray="5 4" />
             </ComposedChart>
@@ -86,7 +86,7 @@ export default function Accuracy({ cutoff }: { cutoff: string }) {
               <XAxis dataKey="lead_hours" tick={tick} {...axis} unit="h" interval={11} dy={6} />
               <YAxis tick={tick} width={44} {...axis} domain={['dataMin - 200', 'auto']} tickFormatter={lbl(v => fmt(v / 1000, 1) + 'k')} />
               <Tooltip {...tip} formatter={mw()} labelFormatter={lbl(h => `${h} h ahead`)} />
-              <ReferenceLine x={16} stroke="var(--short)" strokeDasharray="5 5" />
+              <ReferenceLine x={16} stroke="var(--dim)" strokeDasharray="5 5" />
               <Line dataKey="mae" name="MAE" stroke="var(--forecast)" strokeWidth={2.5} dot={false} activeDot={{ r: 5, strokeWidth: 3, stroke: '#fff' }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -99,7 +99,7 @@ export default function Accuracy({ cutoff }: { cutoff: string }) {
               <XAxis dataKey="bin_start" tick={tick} {...axis} interval={3} tickFormatter={lbl(v => fmt(v / 1000, 0) + ' GW')} dy={6} />
               <YAxis tick={tick} width={40} {...axis} />
               <Tooltip {...tip} formatter={count('hours')} labelFormatter={lbl(v => `${fmt(v)} to ${fmt(v + 500)} MW`)} cursor={false} />
-              <Bar dataKey="count" name="hours" radius={[5, 5, 5, 5]}>{a.histogram.map((h, i) => <Cell key={i} fill={h.bin_start < 0 ? '#eaa3bd' : '#9fd6c2'} />)}</Bar>
+              <Bar dataKey="count" name="hours" radius={[5, 5, 5, 5]}>{a.histogram.map((h, i) => <Cell key={i} fill={h.bin_start < 0 ? '#ef9fa2' : '#9ed3bd'} />)}</Bar>
             </ComposedChart>
           </ResponsiveContainer>
           <p className="hint mt-2">P10 {signed(a.percentiles.p10)} · P50 {signed(a.percentiles.p50)} · P90 {signed(a.percentiles.p90)} MW. Most hours sit left of zero.</p>
@@ -142,7 +142,7 @@ export default function Accuracy({ cutoff }: { cutoff: string }) {
 function Finding({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span className="mt-[7px] h-1.5 w-1.5 flex-none rounded-full bg-[var(--short)]" />
+      <span className="mt-[7px] h-1.5 w-1.5 flex-none rounded-full bg-[var(--forecast)]" />
       <div><b className="font-medium text-[var(--ink)]">{title}.</b> {children}</div>
     </li>
   )
