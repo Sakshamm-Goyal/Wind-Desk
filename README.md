@@ -7,7 +7,9 @@ A small web app for a UK supplier's day-ahead procurement team. It answers two q
 
 Live app: **<VERCEL_OR_VPS_URL>** · Demo video: **<YOUTUBE_UNLISTED_URL>**
 
-![screenshot](docs/desk.png)
+![Day-ahead desk](docs/desk.png)
+
+![Forecast accuracy](docs/accuracy.png)
 
 ## What it does
 
@@ -43,7 +45,7 @@ Headline January findings (09:00 cutoff): MAE 2,039 MW (18 % of mean actual), bi
 │   ├── tests/test_core.py    pytest: as-of boundary cases, no-lookahead, metrics signs, rolling-bias leak test, snapshot smoke test
 │   ├── Dockerfile            python:3.12-slim + uvicorn
 │   └── requirements.txt
-├── frontend/                 Vite + React 19 + TypeScript + Tailwind v4 + Recharts + TanStack Query
+├── frontend/                 Vite + React 19 + TypeScript + Tailwind v4 + Recharts + TanStack Query; light print-style theme (Fraunces / IBM Plex)
 │   ├── src/App.tsx           header, cutoff selector, tabs, "How it works" dialog
 │   ├── src/DayAhead.tsx      day-ahead desk page
 │   ├── src/Accuracy.tsx      accuracy page
