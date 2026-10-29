@@ -33,7 +33,7 @@ export default function Accuracy({ cutoff }: { cutoff: string }) {
         <Kpi icon={ShieldCheck} label="P90 procurement buffer" value={`+${fmt(a.buffer_adjusted.p90)}`} unit="MW" tone="forecast" sub={`bias-adjusted · raw forecast needs +${fmt(a.buffer.p90)} MW`} hint="Extra MW to buy so wind shortfall is covered in 90 % of hours" />
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_400px]">
         <Card title="Accuracy by forecast run" right={<span className="hint">MAE of each publish slot for the next delivery day</span>}>
           <ResponsiveContainer width="100%" height={300}>
             <ComposedChart data={a.by_vintage} margin={{ top: 36, right: 8, left: -8, bottom: 0 }} barCategoryGap="16%">

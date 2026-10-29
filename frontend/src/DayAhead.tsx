@@ -75,7 +75,7 @@ export default function DayAhead({ meta, cutoff }: { meta: Meta; cutoff: string 
         <Kpi icon={ShieldCheck} label="P90 procurement buffer" value={buf ? `+${fmt(buf.p90)}` : '–'} unit="MW" tone="forecast" sub={showAdj ? 'on top of the bias-adjusted forecast' : 'on top of the raw forecast'} />
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-[1fr_380px]">
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_380px]">
         <Card title={<>Wind generation <span className="ml-3 text-[15px] font-normal text-[var(--dim)]">{dayName(date)} · hourly</span></>} right={<Legend items={[['var(--forecast)', 'Forecast at decision'], ['var(--actual)', 'Actual'], ...(showAdj ? [['var(--adjusted)', 'Bias-adjusted', true] as [string, string, boolean]] : [])]} />}>
           <ResponsiveContainer width="100%" height={360}>
             <ComposedChart data={chart} margin={{ top: 8, right: 8, left: -8, bottom: 0 }}>
