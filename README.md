@@ -56,6 +56,11 @@ Headline January findings (09:00 cutoff): MAE 2,039 MW (18 % of mean actual), bi
 ├── docker-compose.yml        backend :8000 + frontend :3000
 ├── vercel.json               static frontend + Python serverless /api on Vercel
 ├── .github/workflows/ci.yml  ruff + pytest, lint + build, docker build
+├── video/                    automated demo-video recorder (Playwright + CDP screencast + macOS TTS + ffmpeg)
+│   ├── scenes.mjs            narration and on-screen actions, scene by scene
+│   ├── slides.mjs            Part 2 slides; code panels are read live from the repo
+│   ├── overlay.js            captions, cursor, focus ring injected into the page
+│   └── record.mjs            runs the app, records frames, assembles MP4 + SRT + chapters
 ├── PLAN.md                   the plan this was built from
 └── VIDEO_SCRIPT.md           demo script for the two-part video
 ```
@@ -85,6 +90,14 @@ cd frontend && npm run lint && npm run build
 ```bash
 .venv/bin/python backend/ingest.py
 ```
+
+## Re-record the demo video
+
+With the app running locally (dev mode on :5174, API on :8001):
+```bash
+cd video && npm ci && node record.mjs
+```
+Outputs `video/out/winddesk-demo.mp4` (1080p), `winddesk-demo.srt` captions and `youtube-chapters.txt`. Narration uses the macOS `say` voice Daniel (en-GB); set `VOICE` / `RATE` to change it.
 
 ## Deploy
 

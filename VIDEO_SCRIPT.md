@@ -49,3 +49,24 @@ Record with Loom/OBS at 1080p, browser at 1440 px wide, app on the deployed URL.
 - [ ] GitHub repo is public with an anonymous name; README links to app + video
 - [ ] Video unlisted, ≤ 10 min, both parts ≤ 5 min, link opens in incognito
 - [ ] Form submitted with repo, app, video links
+
+---
+
+## Recorded version
+
+`video/record.mjs` records this demo end to end from the running app: scripted cursor and clicks, captions, en-GB narration, Part 2 slides with code read live from the repo. The narration is in `video/scenes.mjs` and follows this script closely.
+
+Outputs in `video/out/`:
+
+| File | Use |
+|---|---|
+| `winddesk-demo.mp4` | 1080p video to upload |
+| `winddesk-demo.srt` | YouTube → Subtitles → Upload file (with timing) |
+| `youtube-chapters.txt` | paste into the YouTube description |
+
+**Upload:** YouTube Studio → Create → Upload video → Visibility **Unlisted** → copy the link into the README and the form → open it in an incognito window to check.
+
+**Your own voice (optional):** play the MP4 muted and read the captions over it with a screen recorder, or replace the audio track:
+```bash
+ffmpeg -i video/out/winddesk-demo.mp4 -i my-voice.m4a -map 0:v -map 1:a -c:v copy -shortest winddesk-demo-voice.mp4
+```
