@@ -2,11 +2,14 @@
 // narrates with macOS `say`, and muxes everything into a 1080p MP4 with SRT captions and chapters.
 //   node record.mjs --dry   → generate narration only and print timings
 //   node record.mjs         → full recording (app must be running at APP_URL)
+//   node record.mjs --short → short silent cut: on-screen text only, timed for reading
 import { chromium } from 'playwright'
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-import { scenes, SPOKEN } from './scenes.mjs'
+const SHORT = process.argv.includes('--short')
+const { scenes, SPOKEN = [] } = await import(SHORT ? './scenes-short.mjs' : './scenes.mjs')
+const NAME = SHORT ? 'winddesk-demo-short' : 'winddesk-demo'
 
 const HERE = import.meta.dirname, OUT = path.join(HERE, 'out'), TTS = path.join(OUT, 'tts'), FR = path.join(OUT, 'frames')
 const APP = process.env.APP_URL ?? 'http://localhost:5174'
@@ -23,14 +26,17 @@ function pcm(file) {  // say's WAV may carry extra chunks: find "data"
   throw new Error('no data chunk in ' + file)
 }
 let k = 0
+// silent cut: hold each caption long enough to read (~240 ms a word, 2.4 s minimum)
+const readMs = t => Math.max(2400, t.split(/\s+/).length * 240 + 700)
 for (const sc of scenes) sc.lines = sc.lines.map(text => {
+  if (SHORT) return { text, data: null, ms: readMs(text) }
   const file = path.join(TTS, `${String(k++).padStart(3, '0')}.wav`)
   execFileSync('say', ['-v', VOICE, '-r', String(RATE), `--data-format=LEI16@${SR}`, '-o', file, spoken(text)])
   const data = pcm(file); return { text, file, data, ms: data.length / 2 / SR * 1000 }
 })
 const est = p => scenes.filter(s => s.part === p).reduce((a, s) => a + s.lines.reduce((b, l) => b + l.ms + GAP, 0) + 600, 0) / 1000
 const parts = [...new Set(scenes.map(s => s.part))]
-for (const p of parts) console.log(`${p}: ~${est(p).toFixed(0)} s narration`)
+for (const p of parts) console.log(`${p}: ~${est(p).toFixed(0)} s ${SHORT ? 'of captions' : 'narration'}`)
 if (process.argv.includes('--dry')) process.exit(0)
 
 // ---------- recording ----------
@@ -106,6 +112,7 @@ for (const [si, sc] of scenes.entries()) {
   })()
   const act = sc.act ? sc.act({ ...h, at: i => gates[i].p }) : null
   await Promise.all([narr, act])
+  await sleep(sc.hold ?? 0)
   await page.evaluate(() => window.__demo.cap('')); await sleep(350)
   process.stdout.write(`scene ${si + 1}/${scenes.length} done at ${((Date.now() - t0) / 1000).toFixed(1)} s\n`)
 }
@@ -124,16 +131,19 @@ vf.forEach((f, i) => { const start = Math.max(0, f.t), end = i + 1 < vf.length ?
 list += `file '${vf.at(-1).f}'\n`
 fs.writeFileSync(path.join(OUT, 'frames.txt'), list)
 // audio: one PCM track with each line placed at its cue time
+const mp4 = path.join(OUT, `${NAME}.mp4`)
+const video = ['-vf', `scale=${W}:${H}:flags=lanczos,fps=30,format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-tune', 'stillimage', '-t', (total / 1000).toFixed(3), '-movflags', '+faststart']
+if (SHORT) execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', path.join(OUT, 'frames.txt'), '-an', ...video, mp4], { stdio: 'inherit' })
+else {
 const audio = Buffer.alloc(Math.ceil(total / 1000 * SR) * 2)
 for (const c of cues) c.data.copy(audio, Math.floor(c.start / 1000 * SR) * 2)
 const hdr = Buffer.alloc(44); hdr.write('RIFF', 0); hdr.writeUInt32LE(36 + audio.length, 4); hdr.write('WAVEfmt ', 8); hdr.writeUInt32LE(16, 16); hdr.writeUInt16LE(1, 20); hdr.writeUInt16LE(1, 22)
 hdr.writeUInt32LE(SR, 24); hdr.writeUInt32LE(SR * 2, 28); hdr.writeUInt16LE(2, 32); hdr.writeUInt16LE(16, 34); hdr.write('data', 36); hdr.writeUInt32LE(audio.length, 40)
 fs.writeFileSync(path.join(OUT, 'narration.wav'), Buffer.concat([hdr, audio]))
-const mp4 = path.join(OUT, 'winddesk-demo.mp4')
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', path.join(OUT, 'frames.txt'), '-i', path.join(OUT, 'narration.wav'),
-  '-map', '0:v', '-map', '1:a', '-vf', `scale=${W}:${H}:flags=lanczos,fps=30,format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-tune', 'stillimage',
-  '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-t', (total / 1000).toFixed(3), '-movflags', '+faststart', mp4], { stdio: 'inherit' })
-fs.writeFileSync(path.join(OUT, 'winddesk-demo.srt'), cues.map((c, i) => `${i + 1}\n${ts(c.start)} --> ${ts(c.end + 250)}\n${c.text}\n`).join('\n'))
-fs.writeFileSync(path.join(OUT, 'youtube-chapters.txt'), chapters.map(c => `${ts(c.t, '').slice(3, 8).replace(/^0/, '')} ${c.title}`).join('\n') + '\n')
+  '-map', '0:v', '-map', '1:a', ...video, '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', mp4], { stdio: 'inherit' })
+}
+fs.writeFileSync(path.join(OUT, `${NAME}.srt`), cues.map((c, i) => `${i + 1}\n${ts(c.start)} --> ${ts(c.end + 250)}\n${c.text}\n`).join('\n'))
+fs.writeFileSync(path.join(OUT, `${NAME}-chapters.txt`), chapters.map(c => `${ts(c.t, '').slice(3, 8).replace(/^0/, '')} ${c.title}`).join('\n') + '\n')
 console.log(`\n✓ ${mp4}  (${(total / 1000 / 60).toFixed(2)} min, ${frames.length} frames)`)
 for (const [i, c] of chapters.entries()) console.log(`  ${c.title}: ${(((chapters[i + 1]?.t ?? total) - c.t) / 1000).toFixed(0)} s`)
