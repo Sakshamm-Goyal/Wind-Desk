@@ -110,7 +110,7 @@ export function downloadCsv(name: string, rows: Record<string, unknown>[]) {
 export function RunTick({ x, y, payload, index }: { x?: number; y?: number; payload?: { value?: string }; index?: number }) {
   const [day, time] = String(payload?.value ?? '').split(' ')
   // ponytail: viewport check instead of measuring the axis; good enough for one chart.
-  const dense = window.innerWidth < 900 && !['02:30', '09:30', '15:30', '22:30'].includes(time)
+  const dense = window.innerWidth < 1700 && !['02:30', '09:30', '15:30', '22:30'].includes(time)
   return (
     <g transform={`translate(${x},${y})`}>
       {!dense && <text dy={14} textAnchor="middle" fontSize={11.5} fill="var(--dim)">{time}</text>}

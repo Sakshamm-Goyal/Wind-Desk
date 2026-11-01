@@ -5,7 +5,7 @@ A small web app for a UK supplier's day-ahead procurement team. It answers two q
 1. **What is the latest wind forecast I can act on right now?** — the point-in-time Elexon WINDFOR vintage, never a later one.
 2. **How wrong is it, in MW?** — so the thermal purchase can carry a quantified wind-risk buffer.
 
-Live app: **<VERCEL_OR_VPS_URL>** · Demo video: **<YOUTUBE_UNLISTED_URL>**
+Live app: **https://wind-desk-three.vercel.app** · Demo video: **<YOUTUBE_UNLISTED_URL>**
 
 ![Day-ahead desk](docs/desk.png)
 
