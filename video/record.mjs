@@ -3,13 +3,15 @@
 //   node record.mjs --dry   → generate narration only and print timings
 //   node record.mjs         → full recording (app must be running at APP_URL)
 //   node record.mjs --short → short silent cut: on-screen text only, timed for reading
+//   node record.mjs --site  → silent walkthrough of the site only, no slides
 import { chromium } from 'playwright'
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
-const SHORT = process.argv.includes('--short')
-const { scenes, SPOKEN = [] } = await import(SHORT ? './scenes-short.mjs' : './scenes.mjs')
-const NAME = SHORT ? 'winddesk-demo-short' : 'winddesk-demo'
+const MODE = process.argv.includes('--site') ? 'site' : process.argv.includes('--short') ? 'short' : 'full'
+const SHORT = MODE !== 'full'  // silent, caption-timed
+const { scenes, SPOKEN = [] } = await import({ site: './scenes-site.mjs', short: './scenes-short.mjs', full: './scenes.mjs' }[MODE])
+const NAME = { site: 'winddesk-site-walkthrough', short: 'winddesk-demo-short', full: 'winddesk-demo' }[MODE]
 
 const HERE = import.meta.dirname, OUT = path.join(HERE, 'out'), TTS = path.join(OUT, 'tts'), FR = path.join(OUT, 'frames')
 const APP = process.env.APP_URL ?? 'http://localhost:5174'
